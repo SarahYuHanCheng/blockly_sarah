@@ -47,7 +47,7 @@ void loop() {
           the_func = _buffer[0];
           switch (the_func) {
             case 'U': // ultrasound set
-                  int i_trigpin = bf.indexOf("#",i_func+1);
+                  int i_trigpin = bf.indexOf("#",2);
                   int i_echopin = bf.indexOf("#",i_trigpin+1);
                   ultrasound(i_trigpin,i_echopin);
                   
@@ -56,10 +56,10 @@ void loop() {
                   mySerial.print(u_distance);
               break;
               case'M'://motor
-                  int i_trigpin = bf.indexOf("#",i_func+1);
-                  int i_echopin = bf.indexOf("#",i_trigpin+1);
+                  int i_pin = bf.indexOf("#",2);
+                  int i_pin2 = bf.indexOf("#",i_pin+1);
                   pin_msg=bf.substring(0,i_pin).toInt();
-                  angle_msg=bf.substring(i_pin+1,i).toInt();
+                  angle_msg=bf.substring(i_pin2+1,i).toInt();
                   myservo.attach(pin_msg);
                   myservo.write(angle_msg); //tell servo to go to position
             default: 
