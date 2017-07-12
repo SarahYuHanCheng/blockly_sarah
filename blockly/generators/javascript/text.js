@@ -280,6 +280,9 @@ Blockly.JavaScript['text_print'] = function(block) {
   // Print statement.
   var msg = Blockly.JavaScript.valueToCode(block, 'TEXT',
       Blockly.JavaScript.ORDER_NONE) || '\'\'';
+  if(msg=="\'true\'"){msg='\'recognize\'';}
+  
+  // if(msg.locale"true"){msg='recognize';}
   return 'window.alert(' + msg + ');\n';
 };
 

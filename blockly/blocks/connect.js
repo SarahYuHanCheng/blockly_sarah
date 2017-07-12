@@ -26,13 +26,18 @@ Blockly.Blocks['Connect_to_Server'] = {
         .appendField("SERVER IP:")
         .appendField(new Blockly.FieldTextInput('192.168.0.1'),
                      'server_ip');
+        var thisBlock = this;
+    this.setTooltip(function() {
+      return 'Returns the distance of object in cm,"%1".'.replace('%1',
+          thisBlock.getFieldValue('server_ip'));
+    });
       }
 };
 var UltrasoundJson = {
-  "message0": "change %1 by %2",
+  "message0": "Ultrasound",
   "args0": [
-    {"type": "field_variable", "name": "VAR", "variable": "item"},
-    {"type": "input_value", "name": "DELTA", "check": "Number"}
+    {"type": "input_value", "name": "trigpin", "check": "Number"},
+    {"type": "input_value", "name": "echopin", "check": "Number"}
   ],
   "previousStatement": null,
   "nextStatement": null,
@@ -42,13 +47,20 @@ var UltrasoundJson = {
 Blockly.Blocks['Ultrasound'] = {
   init: function() {
     this.jsonInit(UltrasoundJson);
-    // Assign 'this' to a variable for use in the tooltip closure below.
-    this.setOutput(true, 'Number');
     var thisBlock = this;
     this.setTooltip(function() {
-      return 'Returns the distance of object in cm,"%1".'.replace('%1',
+      return 'Set the pins of ultrasound.'.replace('%1',
           thisBlock.getFieldValue('VAR'));
     });
+  }
+};
+Blockly.Blocks['Ultrasound_value'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('Ultrasound_value');
+    this.setColour(100);    // Assign 'this' to a variable for use in the tooltip closure below.
+    this.setOutput(true, 'Number');
+    
   }
 };
 Blockly.Blocks['recv_device'] = {
@@ -85,5 +97,6 @@ Blockly.Blocks['Ja_test_motor'] = {
     this.appendDummyInput()
         .appendField('angle:')
         .appendField(new Blockly.FieldAngle(90), 'J_motorAngle');
+    this.setOutput(true, 'String');
   }
 };

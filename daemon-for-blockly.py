@@ -133,6 +133,7 @@ def tcp_server(threadName):
                    
                         judgeClient(wrapper_fileIsSend,tcp_server_recv)
 
+
                     # in case of connection had fail (Max/Msp)
                     elif tcp_server_recv=="":
                         tcp_server_connect, address = tcp_server_socket.accept()
@@ -161,6 +162,8 @@ def tcp_server(threadName):
 
 
 def new_client(client, server):
+        global blocky_client
+        blocky_client = client
 #       print("client id %d" % client['id'])
 #       daemon_websocket_server.send_message_to_all("defg")
         print("-----------------------")
@@ -170,7 +173,7 @@ def client_left(client, server):
 #       print("Client(%d) disconnected" % client['id'])
         print("left")
 
-
+# WebSocketerver recv  noted by sarah 0712
 def message_received(client, server, message):
         if len(message) > 200:
                 message = message[:200]+'..'
@@ -180,6 +183,9 @@ def message_received(client, server, message):
 ##        led_on_time = (int)(filter(str.isdigit, blockly_cmd))
 
         print("blockly said: %s" % (blockly_cmd))
+
+        # daemon_websocket_server.send_message_to_all("tttest") #sarah
+        daemon_websocket_server.send_message(blocky_client,"tttest")
         #check the connection with client(Arduino,PD,Mas/Msp...)
         if tcp_server_connect != None :
             end=""
@@ -213,7 +219,6 @@ def my_websocket_server(threadName):
         daemon_websocket_server.set_fn_new_client(new_client)
         print("daemon is ready!")
         print("wait for blockly")
-
         daemon_websocket_server.set_fn_client_left(client_left)
         daemon_websocket_server.set_fn_message_received(message_received)
         daemon_websocket_server.run_forever()
@@ -222,7 +227,7 @@ try:
         #blockly will connect to websocket server
         _thread.start_new_thread(my_websocket_server,("task: websocket server",))
         #client(Arduino,PD,Max/Msp...) will connect to tcp server
-        _thread.start_new_thread(tcp_server,("task: tcp server",))
+        # _thread.start_new_thread(tcp_server,("task: tcp server",))
 ##        thread.start_new_thread(tcp_client,("task: tcp client",))
 
 except:
