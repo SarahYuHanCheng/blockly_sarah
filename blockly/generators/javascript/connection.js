@@ -47,22 +47,29 @@ Blockly.JavaScript['Ja_test_motor'] = function(block) {
 };
 Blockly.JavaScript['Ultrasound_value'] = function(block) {
   
-
-  var functionName = Blockly.JavaScript.provideFunction_(
+    // var back_msg = '0' ; 
+    // var ws = new WebSocket('ws://localhost:9998/echo');
+    // ws.onopen = function(){
+    // };
+    // ws.onmessage = function(evt){
+    //   back_msg = evt.data;
+    //   console.log(evt.data);
+    // };
+    var functionName = Blockly.JavaScript.provideFunction_(
     'websocketServer',[
     'function '+Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_+
     '(){',
     'var out_msg = \'u#\';',
-    'var back_msg = 0 ; ',
+    'var back_msg = \'0\';',
     'var ws = new WebSocket(\'ws://localhost:9998/echo\');',
     'ws.onopen = function(){',
     'ws.send(out_msg);',
-    'back_msg = \'000\';',
     '};',
     'ws.onmessage = function(evt){',
-    // 'back_msg = evt.data;',
-    'back_msg = \'123\';',
+    'window.alert(evt.data);',
     'console.log(evt.data);',
+    'back_msg = evt.data;',
+    'ws.close();',
     '};',
     'ws.onclose = function(){',
     'ws.close();',
@@ -70,7 +77,9 @@ Blockly.JavaScript['Ultrasound_value'] = function(block) {
     'return back_msg;',
     '}']);
   var code = functionName + '()';
-  var back_value = [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
-  return back_value;
-  
+  // return back_msg;
+  return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];  
 };
+
+
+

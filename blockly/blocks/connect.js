@@ -59,7 +59,7 @@ Blockly.Blocks['Ultrasound_value'] = {
     this.appendDummyInput()
         .appendField('Ultrasound_value');
     this.setColour(100);    // Assign 'this' to a variable for use in the tooltip closure below.
-    this.setOutput(true, 'Number');
+    this.setOutput(true, 'String');
     
   }
 };
