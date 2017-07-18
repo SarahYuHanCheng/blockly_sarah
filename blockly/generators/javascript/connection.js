@@ -46,7 +46,7 @@ Blockly.JavaScript['Ja_test_motor'] = function(block) {
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
 Blockly.JavaScript['Ultrasound_value'] = function(block) {
-  
+
     // var back_msg = '0' ; 
     // var ws = new WebSocket('ws://localhost:9998/echo');
     // ws.onopen = function(){
@@ -59,7 +59,7 @@ Blockly.JavaScript['Ultrasound_value'] = function(block) {
     'websocketServer',[
     'function '+Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_+
     '(){',
-    'var out_msg = \'u#\';',
+    'var out_msg = \'u#1\';',
     'var back_msg = \'0\';',
     'var ws = new WebSocket(\'ws://localhost:9998/echo\');',
     'ws.onopen = function(){',

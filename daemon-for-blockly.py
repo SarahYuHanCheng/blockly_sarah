@@ -11,6 +11,7 @@ tcp_server_maxclientnum = 5
 
 websocket_server_port=9998
 
+
 # blockly_cmd="192.168.1.179"
 led_on_time=0
 daemon_websocket_server = WebsocketServer(websocket_server_port)
@@ -23,7 +24,7 @@ def judgeClient(wrapper_fileIsSend,tcp_server_recv):
     global who_is_client
     who_is_client = tcp_server_recv[0:15]
     daemon_websocket_server.send_message_to_all(tcp_server_recv)
-
+    print("send to client: " +who_is_client)
 
 # task: tcp server
 def tcp_server(threadName):
@@ -50,7 +51,7 @@ def tcp_server(threadName):
             try:
                 if tcp_server_connect!=None:
                         tcp_server_recv = (tcp_server_connect.recv(1024)).strip().decode('utf-8')
-                print("client said: " + tcp_server_recv)
+                # print("client said: " + tcp_server_recv)
                 # check the connection with client(Arduino,PD,Max/Msp...)
                 if tcp_server_recv!=None and tcp_server_connect!=None:
                     if tcp_server_recv != "":
@@ -106,14 +107,13 @@ def message_received(client, server, message):
 ##        led_on_time = (int)(filter(str.isdigit, blockly_cmd))
 
         print("blockly said: %s" % (blockly_cmd))
-
         
         #check the connection with client(Arduino,PD,Mas/Msp...)
         if tcp_server_connect != None :
             end=""
             tcp_server_connect.send((blockly_cmd+end).encode('utf-8'))
             print('client is:'+who_is_client)
-            print("send to client: " + blockly_cmd + end)
+            # print("send to client: " + blockly_cmd + end)
         else:
             print("check the client with client.")
 # task: websocket server
