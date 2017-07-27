@@ -59,8 +59,6 @@ def tcp_server(threadName):
                         #send client's(Arduino,PD,Max/Msp...) response to blcokly by websocket
                    
                         judgeClient(wrapper_fileIsSend,tcp_server_recv)
-
-
                     # in case of connection had fail (Max/Msp)
                     elif tcp_server_recv=="":
                         tcp_server_connect, address = tcp_server_socket.accept()
@@ -91,7 +89,7 @@ def new_client(client, server):
 #       print("client id %d" % client['id'])
 #       daemon_websocket_server.send_message_to_all("defg")
         print("-----------------------")
-        print("blockly in!")
+        print("blockly in!"+str(client['address']))
 
 def client_left(client, server):
 #       print("Client(%d) disconnected" % client['id'])
@@ -131,7 +129,7 @@ try:
         #blockly will connect to websocket server
         _thread.start_new_thread(my_websocket_server,("task: websocket server",))
         #client(Arduino,PD,Max/Msp...) will connect to tcp server
-        _thread.start_new_thread(tcp_server,("task: tcp server",))
+        # _thread.start_new_thread(tcp_server,("task: tcp server",))
 ##        thread.start_new_thread(tcp_client,("task: tcp client",))
 
 except:

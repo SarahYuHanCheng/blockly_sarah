@@ -36,7 +36,10 @@
   <xml id="toolbox" style="display: none">
     <category name="AutoCar">
       <block type="move_forward"></block>
-      <block type="backward"></block>
+      <block type="move_backward"></block>
+      <block type="turn_right"></block>
+      <block type="turn_left"></block>
+      <block type="show_color"></block>
     </category>
     <category name="Wifi">
       <block type="Connect_to_Server"></block>
@@ -132,11 +135,15 @@
          toolbox: document.getElementById('toolbox')});
     Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
                                workspace);
+    parser = new DOMParser();
+    xmlDoc = parser.parseFromString(txt, "text/xml");
 
     function showCode() {
       // Generate JavaScript code and display it.
       Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      console.log("index.html workspace :"+document.getElementById('startBlocks'));
       var code = Blockly.JavaScript.workspaceToCode(workspace);
+      console.log("index.html code :"+code);
       alert(code);
     }
 

@@ -67,9 +67,10 @@ void loop() {
             case 'u':// ultrasound get
 //                  mySerial.print(u_distance);
                     mySerial.println(distance);
-                    Serial.println("send distance");
-                    ddd(2000);
+                    
+                    ddd(20000);
                     mySerial.println("done");
+                    Serial.println("send distance");
               break;
               case'M'://motor
 //                  int i_pin = bf.indexOf("#",2);
