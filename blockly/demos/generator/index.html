@@ -26,12 +26,26 @@
 
   <p>&rarr; More info on <a href="https://developers.google.com/blockly/guides/configure/web/code-generators">Code Generators</a>&hellip;</p>
 
-  <p>
-    <button onclick="showCode()">Show JavaScript</button>
-    <button onclick="runCode()">Run JavaScript</button>
-  </p>
-
-  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+  <table width="100%">
+    <tbody>
+      <tr>
+        <td> 
+          <p>
+            <a>Upload for core0</a><a style="color: orange"> (complete code)</a>
+            <button onclick="showCode()">Show JavaScript</button>
+            <button onclick="runCode()">Run JavaScript</button>
+          </p>
+          <div id="blocklyDiv" style="height: 480px; width: 600px;"></div></td>
+        <td>
+          <p>
+            <a>Upload for core1</a><a style="color: orange"> (real time change)</a>
+            <button onclick="showCode()">Show JavaScript</button>
+            <button onclick="runCode()">Run JavaScript</button>
+          </p>
+          <div id="blocklyDiv2" style="height: 480px; width: 600px;"></div></td>
+      </tr>
+    </tbody>
+  </table>
 
   <xml id="toolbox" style="display: none">
     <category name="AutoCar">
@@ -161,6 +175,37 @@
       }
     }
   </script>
+  <script>
+    var workspace2 = Blockly.inject('blocklyDiv2',
+        {media: '../../media/',
+         toolbox: document.getElementById('toolbox')});
+    Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                               workspace2);
+    parser = new DOMParser();
+    xmlDoc = parser.parseFromString(txt, "text/xml");
 
+    function showCode() {
+      // Generate JavaScript code and display it.
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      console.log("index.html workspace :"+document.getElementById('startBlocks'));
+      var code2 = Blockly.JavaScript.workspaceToCode(workspace2);
+      console.log("index.html code :"+code2);
+      alert(code2);
+    }
+
+    function runCode() {
+      // Generate JavaScript code and run it.
+      window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code2 = Blockly.JavaScript.workspaceToCode(workspace2);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code2);
+      } catch (e) {
+        alert(e);
+      }
+    }
+  </script>
 </body>
 </html>
