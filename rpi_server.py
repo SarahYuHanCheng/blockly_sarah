@@ -105,13 +105,13 @@ def message_received(client, server, message):
         print("blockly said: %s" % (blockly_cmd))
         cmdToWho = blockly_cmd[0:15]
         print('cmd to who? ' + cmdToWho)
-        if blockly_cmd.find(feature_takephoto)
+        if blockly_cmd.find(feature_takephoto):
             photo_name.append(random.randrange(9999999))
             os.system("raspistill -w 100 -h 100 -o "+str(photo_name[len(photo_name)-1])+".jpg")
             print("take photo: "+str(photo_name[len(photo_name)-1])+".jpg")
-            session = ftplib.FTP('192.168.0.101','rpi','rpi') 
+            session = ftplib.FTP('192.168.1.179','sarahcheng','tuhbnygj') 
             file = open(str(photo_name[len(photo_name)-1])+".jpg",'rb')
-            session.storbinary('STOR '+"rpi"+str(photo_name[len(photo_name)-1])++".jpg",file) 
+            session.storbinary('STOR '+"rpi"+str(photo_name[len(photo_name)-1])+".jpg",file) 
             file.close()
             session.quit()
             daemon_websocket_server.send_message_to_all(str(photo_name[len(photo_name)-1])+".jpg")
