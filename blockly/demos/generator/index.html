@@ -49,6 +49,10 @@
 
   <xml id="toolbox" style="display: none">
     <category name="AutoCar">
+     <!-- <block type="ultrasonic_setting"></block> !-->
+      <block type="ultrasonic_setting"></block>
+      <block type="ultrasonic_distance"></block>
+      <block type="Color_Sense_setting"></block>
       <block type="move_forward"></block>
       <block type="move_backward"></block>
       <block type="turn_right"></block>
@@ -56,7 +60,8 @@
       <block type="show_color"></block>
     </category>
     <category name="Wifi">
-      <block type="Connect_to_Server"></block>
+      <block type="send_to_max"></block>
+      <block type="send_to_rpi"></block>
       <block type="recv_device"></block>
       <block type="Ja_test_motor"></block>
       <block type="Ultrasound"></block>
@@ -149,8 +154,8 @@
          toolbox: document.getElementById('toolbox')});
     Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
                                workspace);
-    parser = new DOMParser();
-    xmlDoc = parser.parseFromString(txt, "text/xml");
+    // parser = new DOMParser();
+    // xmlDoc = parser.parseFromString(txt, "text/xml");
 
     function showCode() {
       // Generate JavaScript code and display it.
@@ -175,7 +180,7 @@
       }
     }
   </script>
-  <script>
+  <!-- <script>
     var workspace2 = Blockly.inject('blocklyDiv2',
         {media: '../../media/',
          toolbox: document.getElementById('toolbox')});
@@ -206,6 +211,6 @@
         alert(e);
       }
     }
-  </script>
+  </script> -->
 </body>
 </html>
