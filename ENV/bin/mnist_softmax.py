@@ -43,10 +43,11 @@ import shutil
 from random import randrange
 imgName = 0
 # Load from and save to
-Names = [['/Users/sarahcheng/Desktop/tensorflow_db/test_image//','test']]#, ['/Users/sarahcheng/Desktop/tensorflow_db/trainingSample//','train']
+Names = [['/Users/sarahcheng/Desktop/tensorflow_db/test_image/2/','test']]#, ['/Users/sarahcheng/Desktop/tensorflow_db/trainingSample//','train']
 # Names = [['D:\\tensorflow_db\\','test'], ['D:\\tensorflow_db\\','test']]
+put_daemon_img = "///Users/sarahcheng/Desktop/tensorflow_db/"
 img_test_dir = "///Users/sarahcheng/Desktop/tensorflow_db/test_image/2/"
-img_train_dir = "///Users/sarahcheng/Desktop/tensorflow_db/trainingSample/"
+# img_train_dir = "///Users/sarahcheng/Desktop/tensorflow_db/trainingSample/"
 output_dir = "/Users/sarahcheng/Documents/Master/scream/Blockly_/MNIST_data_copy/"
 isRecv=False
 tensorflow_img_recognize="tensorflowimg##"
@@ -54,92 +55,87 @@ prefix_tensorflow_prediction="tensorflowPrediction#"
 recognize_false="false#"
 recognize_true="true#"
 # preprocess functions
-def resizeImage(DATA_DIR):
+def resizeImage(DATA_DIR_in,DATA_DIR_out):
     # Names = [['training-images\\','train'], ['tensorflow_db\\','test']]
     
     #DATA_DIR = "D:\\myimg2\\"
     file_data = []
-    for filename in os.listdir(DATA_DIR):
-        if fnmatch.fnmatch(filename,"*.jpg"):
+    for filename in os.listdir(DATA_DIR_in):
+        if fnmatch.fnmatch(filename,"*.png"):
             print('Loading: %s' % filename)
-            im = Image.open(DATA_DIR+filename).convert('L')  # to Gray scale
+            im = Image.open(DATA_DIR_in+filename).convert('L')  # to Gray scale
             print (im.size)
             width = 28
             ratio = float(width)/im.size[0]
             height = 28
             nim = im.resize( (width, height), Image.BILINEAR )
             print (nim.size)
-            nim.save(DATA_DIR+filename)
+            nim.save(DATA_DIR_out+filename)
 
-def convertImageToMnistFormat():
+def convertImageToMnistFormat(DATA_DIR_in):
 
-    for name in Names:
-    
-        data_image = array('B')
-        data_label = array('B')
+    data_image = array('B')
+    data_label = array('B')
+    FileList =[]
+    for filename in os.listdir(DATA_DIR_in):#path
+        if filename.endswith(".png"):
+            FileList.append(os.path.join(DATA_DIR_in,filename))
+        if filename.endswith(".jpg"):
+            FileList.append(os.path.join(DATA_DIR_in,filename))
+    shuffle(FileList) # Usefull for further segmenting the validation set
+    print(FileList)
+    for filename in FileList:
+        # print ('filename: '+filename)
+        print (filename)
+        label = int(filename.split('/')[8]) #sarah \\-->// # [2]-->[1][0]
+        print (label)
+        Im = Image.open(filename)#sarah
+        
 
-        FileList = []
-        for dirname in os.listdir(name[0])[1:]: # [1:] Excludes .DS_Store from Mac OS
-            print('dirname:'+dirname)
-            path = os.path.join(name[0],dirname)#,dirname
-            for filename in os.listdir(path):
-                if filename.endswith(".png"):
-                    FileList.append(os.path.join(name[0],dirname,filename))
-                if filename.endswith(".jpg"):
-                    FileList.append(os.path.join(name[0],dirname,filename))
-        shuffle(FileList) # Usefull for further segmenting the validation set
-        # print(FileList)
-        for filename in FileList:
-            # print ('filename: '+filename)
-            label = int(filename.split('//')[1][0]) #sarah \\-->// # [2]-->[1][0]
+        pixel = Im.load()
 
-            Im = Image.open(filename)
-            print (filename)
+        width, height = Im.size
+       # print ('width'+width)
+       # print ('height'+height)
+        x=0
+        y=0
+        for x in range(0,width):
+            for y in range(0,height):
+                data_image.append(pixel[y,x])
 
-            pixel = Im.load()
+        data_label.append(label) # labels start (one unsigned byte each)
 
-            width, height = Im.size
-           # print ('width'+width)
-           # print ('height'+height)
-            x=0
-            y=0
-            for x in range(0,width):
-                for y in range(0,height):
-                    data_image.append(pixel[y,x])
+    hexval = "{0:#0{1}x}".format(len(FileList),6) # number of files in HEX
 
-            data_label.append(label) # labels start (one unsigned byte each)
+    # header for label array
 
-        hexval = "{0:#0{1}x}".format(len(FileList),6) # number of files in HEX
+    header = array('B')
+    header.extend([0,0,8,1,0,0])
+    header.append(int('0x'+hexval[2:][:2],16))
+    header.append(int('0x'+hexval[2:][2:],16))
 
-        # header for label array
+    data_label = header + data_label
 
-        header = array('B')
-        header.extend([0,0,8,1,0,0])
-        header.append(int('0x'+hexval[2:][:2],16))
-        header.append(int('0x'+hexval[2:][2:],16))
-    
-        data_label = header + data_label
+    # additional header for images array
 
-        # additional header for images array
-    
-        if max([width,height]) <= 256:
-            header.extend([0,0,0,width,0,0,0,height])
-        else:
-            raise ValueError('Image exceeds maximum size: 256x256 pixels');
+    if max([width,height]) <= 256:
+        header.extend([0,0,0,width,0,0,0,height])
+    else:
+        raise ValueError('Image exceeds maximum size: 256x256 pixels');
 
-        header[3] = 3 # Changing MSB for image data (0x00000803)
-    
-        data_image = header + data_image
+    header[3] = 3 # Changing MSB for image data (0x00000803)
 
-        output_file = open(name[1]+'-images-idx3-ubyte', 'wb')
-        data_image.tofile(output_file)
-        print (name[1]+'-images-idx3-ubyte' + 'success!')
-        output_file.close()
+    data_image = header + data_image
 
-        output_file = open(name[1]+'-labels-idx1-ubyte', 'wb')
-        data_label.tofile(output_file)
-        print (name[1]+'-labels-idx1-ubyte' + 'success!')
-        output_file.close()
+    output_file = open('test-images-idx3-ubyte', 'wb')
+    data_image.tofile(output_file)
+    print ('test-images-idx3-ubyte' + 'success!')
+    output_file.close()
+
+    output_file = open('test-labels-idx1-ubyte', 'wb')
+    data_label.tofile(output_file)
+    print ('test-labels-idx1-ubyte' + 'success!')
+    output_file.close()
 
 ##
 def recvImage(DATA_DIR):
@@ -187,20 +183,20 @@ def recvImage(DATA_DIR):
 
 while True:    
     # recvImage("D:\\tensorflow_db\\0\\")  
-    recvImage(img_test_dir)  
+    recvImage(put_daemon_img)  
     ##try :
     ##    recvImage("D:\\tensorflow_db\\0\\")
     ##except:
     ##    print ("exception")
 
     if isRecv:
-        resizeImage(img_test_dir)# /Users/sarahcheng
+        resizeImage(put_daemon_img,img_test_dir)# /Users/sarahcheng
 ##        resizeImage("D:\\training-images\\1\\")
 ##        resizeImage("D:\\training-images\\2\\")
 ##        resizeImage("D:\\training-images\\3\\")
 ##        resizeImage("D:\\training-images\\4\\")
 ##        resizeImage("D:\\training-images\\5\\")
-        convertImageToMnistFormat()
+        convertImageToMnistFormat(img_test_dir)
 
         for name in Names:
             with open(name[1]+'-images-idx3-ubyte', 'rb') as f_in, gzip.open(output_dir+name[1]+'-images.gz', 'wb') as f_out:
@@ -264,9 +260,9 @@ while True:
             strCmd = str(cmd.strip().decode('utf-8'))
             print(strCmd)
             directoryNameStartInedx = len(prefix_tensorflow_prediction)+len(recognize_false)
-            original_img_path = 'D:\\tensorflow_db\\0'
-            training_false_img_path = 'D:\\training-images\\'+strCmd[directoryNameStartInedx:len(strCmd)]
-            training_true_img_path = 'D:\\training-images\\'+myPrediction[1:2]
+            original_img_path = img_test_dir
+            training_false_img_path = '///Users/sarahcheng/Desktop/tensorflow_db/test_image/f/'+strCmd[directoryNameStartInedx:len(strCmd)]
+            training_true_img_path = '///Users/sarahcheng/Desktop/tensorflow_db/test_image/t/'+myPrediction[1:2]
             print('directoryNameStartInedx:'+str(directoryNameStartInedx))
             print('train_false_path:'+training_false_img_path)
             print('train_true_path:'+training_true_img_path)
@@ -275,7 +271,7 @@ while True:
                     os.makedirs(training_false_img_path)
                 os.rename(original_img_path+'\\'+str(imgName)+'.jpg',training_false_img_path+'\\'+str(imgName)+'.jpg')
                 s.send((tensorflow_img_recognize+'saveToDbSuccessful').encode('utf-8'))
-                print('SaveToDbSuccessful')
+                print('false_SaveToDbSuccessful')
                 isRecv=False
                 s.close()
                 print('connection closed')
@@ -289,4 +285,77 @@ while True:
                 s.close()
                 print('connection closed')
                 break;
+
+def convertImageToMnistFormat_origin():
+
+    for name in Names:
+    
+        data_image = array('B')
+        data_label = array('B')
+
+        FileList = []
+        for dirname in os.listdir(name[0])[1:]: # [1:] Excludes .DS_Store from Mac OS
+            print('dirname:'+dirname)
+            path = os.path.join(name[0])#,dirname
+            for filename in os.listdir(path):#path
+                if filename.endswith(".png"):
+                    FileList.append(os.path.join(name[0],dirname,filename))
+                if filename.endswith(".jpg"):
+                    FileList.append(os.path.join(name[0],dirname,filename))
+        shuffle(FileList) # Usefull for further segmenting the validation set
+        # print(FileList)
+        for filename in FileList:
+            # print ('filename: '+filename)
+            print (filename)
+            label = int(filename.split('//')[1][0]) #sarah \\-->// # [2]-->[1][0]
+            print (label)
+            filename.replace('//','/')#sarah
+            print (filename.replace('//','/'))
+            Im = Image.open(filename)#sarah
+            
+
+            pixel = Im.load()
+
+            width, height = Im.size
+           # print ('width'+width)
+           # print ('height'+height)
+            x=0
+            y=0
+            for x in range(0,width):
+                for y in range(0,height):
+                    data_image.append(pixel[y,x])
+
+            data_label.append(label) # labels start (one unsigned byte each)
+
+        hexval = "{0:#0{1}x}".format(len(FileList),6) # number of files in HEX
+
+        # header for label array
+
+        header = array('B')
+        header.extend([0,0,8,1,0,0])
+        header.append(int('0x'+hexval[2:][:2],16))
+        header.append(int('0x'+hexval[2:][2:],16))
+    
+        data_label = header + data_label
+
+        # additional header for images array
+    
+        if max([width,height]) <= 256:
+            header.extend([0,0,0,width,0,0,0,height])
+        else:
+            raise ValueError('Image exceeds maximum size: 256x256 pixels');
+
+        header[3] = 3 # Changing MSB for image data (0x00000803)
+    
+        data_image = header + data_image
+
+        output_file = open(name[1]+'-images-idx3-ubyte', 'wb')
+        data_image.tofile(output_file)
+        print (name[1]+'-images-idx3-ubyte' + 'success!')
+        output_file.close()
+
+        output_file = open(name[1]+'-labels-idx1-ubyte', 'wb')
+        data_label.tofile(output_file)
+        print (name[1]+'-labels-idx1-ubyte' + 'success!')
+        output_file.close()
             
