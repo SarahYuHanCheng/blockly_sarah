@@ -61,7 +61,7 @@ def resizeImage(DATA_DIR_in,DATA_DIR_out):
     #DATA_DIR = "D:\\myimg2\\"
     file_data = []
     for filename in os.listdir(DATA_DIR_in):
-        if fnmatch.fnmatch(filename,"*.png"):
+        if fnmatch.fnmatch(filename,"*.jpg"):
             print('Loading: %s' % filename)
             im = Image.open(DATA_DIR_in+filename).convert('L')  # to Gray scale
             print (im.size)
@@ -261,7 +261,7 @@ while True:
             print(strCmd)
             directoryNameStartInedx = len(prefix_tensorflow_prediction)+len(recognize_false)
             original_img_path = img_test_dir
-            training_false_img_path = '///Users/sarahcheng/Desktop/tensorflow_db/test_image/f/'+strCmd[directoryNameStartInedx:len(strCmd)]
+            training_false_img_path = '///Users/sarahcheng/Desktop/tensorflow_db/test_image/f/'+strCmd[directoryNameStartInedx:len(strCmd)]# 27到最後
             training_true_img_path = '///Users/sarahcheng/Desktop/tensorflow_db/test_image/t/'+myPrediction[1:2]
             print('directoryNameStartInedx:'+str(directoryNameStartInedx))
             print('train_false_path:'+training_false_img_path)
@@ -269,7 +269,7 @@ while True:
             if strCmd.find('false')!=-1:
                 if not os.path.exists(training_false_img_path):
                     os.makedirs(training_false_img_path)
-                os.rename(original_img_path+'\\'+str(imgName)+'.jpg',training_false_img_path+'\\'+str(imgName)+'.jpg')
+                os.rename(original_img_path+str(imgName)+'.jpg',training_false_img_path+'/'+str(imgName)+'.jpg')
                 s.send((tensorflow_img_recognize+'saveToDbSuccessful').encode('utf-8'))
                 print('false_SaveToDbSuccessful')
                 isRecv=False
@@ -278,7 +278,7 @@ while True:
                 break;
             elif strCmd.find('true')!=-1:
                 print(myPrediction)
-                os.rename(original_img_path+'\\'+str(imgName)+'.jpg',training_true_img_path+'\\'+str(imgName)+'.jpg')
+                os.rename(original_img_path+str(imgName)+'.jpg',training_true_img_path+'/'+str(imgName)+'.jpg')
                 s.send((tensorflow_img_recognize+'saveToDbSuccessful').encode('utf-8'))
                 print('SaveToDbSuccessful')
                 isRecv=False
