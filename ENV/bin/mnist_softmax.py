@@ -146,6 +146,7 @@ def recvImage(DATA_DIR):
     s.connect(("127.0.0.1", port))
 ##    s.send("imgte") only work on python 2.7
     s.send(tensorflow_img_recognize.encode('utf-8'))  # recv site also need to decode
+    s.send(('recvImage').encode('utf-8'))
     global isRecv
     while (not isRecv) :
         print(isRecv)
@@ -251,7 +252,7 @@ while True:
         host = socket.gethostname()     # Get local machine name
         port = 17784                    # Reserve a port for your service. # sarah 0823 17784-->17789
 
-        s.connect(("127.0.0.1", port))
+        s.connect(("127.0.0.1", port))# second connect
     ##    s.send("imgte") only work on python 2.7
         # example: tensorflowimg##tensorflowPrediction#[5]
         s.send((tensorflow_img_recognize+prefix_tensorflow_prediction+myPrediction).encode('utf-8'))  # recv site also need to decode
@@ -259,7 +260,7 @@ while True:
             cmd = s.recv(1024)
             strCmd = str(cmd.strip().decode('utf-8'))
             print(strCmd)
-            directoryNameStartInedx = len(prefix_tensorflow_prediction)+len(recognize_false)
+            directoryNameStartInedx = len(tensorflow_img_recognize)+len(prefix_tensorflow_prediction)+len(recognize_false)
             original_img_path = img_test_dir
             training_false_img_path = '///Users/sarahcheng/Desktop/tensorflow_db/test_image/f/'+strCmd[directoryNameStartInedx:len(strCmd)]# 27到最後
             training_true_img_path = '///Users/sarahcheng/Desktop/tensorflow_db/test_image/t/'+myPrediction[1:2]
